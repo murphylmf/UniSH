@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass">
+  <meta name="keywords" content="UniSH, Scene Reconstruction, Human Mesh Recovery, NeRF">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass</title>
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <style>
+    /* 1. 轮播图容器样式 */
+    .carousel .item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 10px 5px;
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      background: #000;
+      transform: translateZ(0);
+    }
+    .carousel .item video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    
+    /* 2. 悬浮计数胶囊样式 */
+    .video-overlay-label {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      pointer-events: none;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.1);
+      z-index: 10;
+    }
+
+    /* 3. Player 样式 */
+    #canvas-container {
+      width: 100%;
+      height: 500px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    /* 4. Teaser 媒体容器样式 (视频和图片共用) */
+    .teaser-video-wrapper {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden; 
+      border: 1px solid rgba(0,0,0,0.08); 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      margin-bottom: 20px;
+      background: #000; /* 图片背景也可以是黑的，或者改成 #fff */
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              Placeholder names (Your Name, Co-Author, etc.)
+            </span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/Placeholder/UniSH" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="hero-body has-text-centered">
+      
+      <div class="teaser-video-wrapper">
+        <video id="teaser-video" autoplay muted loop playsinline controls style="width: 100%; height: auto; display: block;">
+          <source src="./static/videos/teaser.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div class="teaser-video-wrapper" style="background: #fff;"> <img src="./static/images/teaser.svg" alt="UniSH Teaser" style="width: 100%; display: block;">
+      </div>
+      
+      <h2 class="subtitle has-text-centered">
+        Given a monocular video as input, our UniSH is capable of jointly reconstructing scene and human in a single forward pass, enabling effective estimation of scene geometry, camera parameters and SMPL parameters.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We present UniSH, a unified, feed-forward framework for joint metric-scale 3D scene and human reconstruction. A key challenge in this domain is the scarcity of large-scale, annotated real-world data, forcing a reliance on synthetic datasets. This reliance introduces a significant sim-to-real domain gap, leading to poor generalization, low-fidelity human geometry, and poor alignment on in-the-wild videos.
+          </p>
+          <p>
+            To address this, we propose an innovative training paradigm that effectively leverages unlabeled in-the-wild data. Our framework bridges strong, disparate priors from scene reconstruction and HMR, and is trained with two core components: (1) a robust distillation strategy to refine human surface details by distilling high-frequency details from an expert depth model, and (2) a two-stage supervision scheme, which first learns coarse localization on synthetic data, then fine-tunes on real data by directly optimizing the geometric correspondence between the SMPL mesh and the human point cloud. This approach enables our feed-forward model to jointly recover high-fidelity scene geometry, human point clouds, camera parameters, and coherent, metric-scale SMPL bodies, all in a single forward pass. Extensive experiments demonstrate that our model achieves state-of-the-art performance on human-centric scene reconstruction and delivers highly competitive results on global human motion estimation, comparing favorably against both optimization-based frameworks and HMR-only methods.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+        <div class="content">
+            <img src="./static/images/framework.svg" alt="UniSH Framework" style="width: 100%; max-width: 1000px; margin-bottom: 10px;">
+            <p class="has-text-justified is-size-6">
+              <strong>The network architecture of UniSH.</strong> 
+              UniSH takes a monocular video as input. The video frames are processed by the <strong>Reconstruction Branch</strong> to predict per-frame camera extrinsics <em>E</em>, confidence maps <em>C</em>, and pointmaps <em>P</em>. Camera intrinsics <em>K</em> are derived from the pointmaps. Human crops from the video are fed into the <strong>Human Body Branch</strong> along with <em>K</em> to estimate global SMPL shape parameters <em>&beta;</em> and per-frame pose parameters <em>&theta;<sub>i</sub></em>. Features from both branches are processed by <strong>AlignNet</strong> to predict the global scene scale <em>s</em> and per-frame SMPL translations <em>t<sub>i</sub></em> for coherent scene and human alignment. The indices (e.g., in <em>&theta;<sub>1</sub>, &theta;<sub>2</sub>, &theta;<sub>3</sub></em> and <em>t<sub>1</sub>, t<sub>2</sub>, t<sub>3</sub></em>) denote frame-specific parameters.
+            </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Interactive Visualization</h2>
+    <div class="content has-text-centered">
+      <p>
+        Interactive 4D Player. <br>
+        <strong>Left Click</strong> to Rotate, <strong>Right Click</strong> to Pan, <strong>Scroll</strong> to Zoom. <br>
+        <span class="is-size-7" style="color: #666;">* Scene point clouds are downsampled for smoother web performance.</span>
+      </p>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <div class="box" style="padding: 10px; background: #f5f5f5;">
+          <div id="canvas-container">
+            <div id="loading-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;">
+              <span class="icon is-large"><i class="fas fa-spinner fa-pulse"></i></span>
+              <p style="margin-top: 10px;">Loading 3D Sequence...</p>
+            </div>
+          </div>
+
+          <div class="columns is-vcentered is-mobile" style="margin-top: 10px; padding: 0 10px;">
+            <div class="column is-narrow">
+              <button id="play-btn" class="button is-dark is-rounded is-small">
+                <span class="icon is-small"><i class="fas fa-play"></i></span>
+              </button>
+            </div>
+            <div class="column">
+              <input id="frame-slider" class="slider is-fullwidth is-circle is-dark" step="1" min="0" max="0" value="0" type="range">
+            </div>
+            <div class="column is-narrow">
+              <span id="frame-count" class="tag is-light" style="width: 80px;">Frame: 0</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">More visualization results</h2>
+    
+    <div id="results-carousel" class="carousel results-carousel">
+      <div class="item item-video1">
+        <video poster="" id="video1" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_1.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 01 / 12</div>
+      </div>
+      <div class="item item-video2">
+        <video poster="" id="video2" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_2.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 02 / 12</div>
+      </div>
+      <div class="item item-video3">
+        <video poster="" id="video3" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_3.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 03 / 12</div>
+      </div>
+      <div class="item item-video4">
+        <video poster="" id="video4" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_4.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 04 / 12</div>
+      </div>
+      <div class="item item-video5">
+        <video poster="" id="video5" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_5.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 05 / 12</div>
+      </div>
+      <div class="item item-video6">
+        <video poster="" id="video6" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_6.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 06 / 12</div>
+      </div>
+      <div class="item item-video7">
+        <video poster="" id="video7" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_7.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 07 / 12</div>
+      </div>
+      <div class="item item-video8">
+        <video poster="" id="video8" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_8.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 08 / 12</div>
+      </div>
+      <div class="item item-video9">
+        <video poster="" id="video9" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_9.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 09 / 12</div>
+      </div>
+      <div class="item item-video10">
+        <video poster="" id="video10" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_10.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 10 / 12</div>
+      </div>
+      <div class="item item-video11">
+        <video poster="" id="video11" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_11.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 11 / 12</div>
+      </div>
+      <div class="item item-video12">
+        <video poster="" id="video12" autoplay controls muted loop playsinline height="100%">
+          <source src="./static/videos/case_12.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay-label">SEQ 12 / 12</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{unish2025,
+  author    = {Placeholder Names},
+  title     = {UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2025},
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            Template borrowed from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="./static/js/fontawesome.all.min.js"></script>
+<script src="./static/js/bulma-carousel.min.js"></script>
+<script src="./static/js/bulma-slider.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    var options = {
+      slidesToScroll: 1,
+      slidesToShow: 1,
+      loop: true,
+      infinite: true,
+      autoplay: false,
+      pagination: false,
+    };
+    var carousels = bulmaCarousel.attach('.carousel', options);
+  });
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  
+    // 配置
+    const MODEL_PATH = './static/models/sequence.glb';
+    const FPS = 10; 
+  
+    let scene, camera, renderer, controls;
+    let frames = []; 
+    let currentFrame = 0;
+    let isPlaying = false;
+    let intervalId = null;
+  
+    const container = document.getElementById('canvas-container');
+    const slider = document.getElementById('frame-slider');
+    const playBtn = document.getElementById('play-btn');
+    const frameLabel = document.getElementById('frame-count');
+    const loadingOverlay = document.getElementById('loading-overlay');
+  
+    init();
+  
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xf5f5f5);
+  
+      camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+      
+      // ================================================================
+      // [已填入你提供的参数]
+      // ================================================================
+      camera.position.set(-0.000, -4.272, 0.000);
+      // ================================================================
+  
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      
+      // [调试] 关闭阴影贴图和旧光照模式
+      renderer.shadowMap.enabled = false; 
+      renderer.useLegacyLights = false; 
+  
+      container.appendChild(renderer.domElement);
+  
+      // [超强灯光组合]
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 3.0);
+      scene.add(hemiLight);
+      
+      const dirLight = new THREE.DirectionalLight(0xffffff, 3.0);
+      dirLight.position.set(5, 10, 7);
+      scene.add(dirLight);
+  
+      const frontLight = new THREE.DirectionalLight(0xffffff, 2.0);
+      frontLight.position.set(0, 0, 5); 
+      scene.add(frontLight);
+  
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      
+      // ================================================================
+      // [已填入你提供的 Target]
+      // ================================================================
+      controls.target.set(0.000, 0.000, 0.000);
+      // ================================================================
+  
+      const loader = new GLTFLoader();
+      console.log("Loading:", MODEL_PATH);
+      
+      loader.load(MODEL_PATH, function (gltf) {
+        const root = gltf.scene;
+        scene.add(root);
+  
+        frames = [];
+        root.traverse((node) => {
+          
+          // ==========================================
+          // [SMPL 修复]
+          // ==========================================
+          if (node.isMesh) {
+              // 1. 强制重新计算法线
+              node.geometry.computeVertexNormals();
+              // 2. 删除原有颜色属性
+              if (node.geometry.attributes.color) {
+                  node.geometry.deleteAttribute('color');
+              }
+              // 3. 赋予材质 (肉色)
+              node.material = new THREE.MeshStandardMaterial({
+                  color: 0xff9966,
+                  roughness: 0.4,
+                  metalness: 0.0,
+                  side: THREE.DoubleSide
+              });
+              node.material.vertexColors = false; 
+          }
+  
+          // [点云大小]
+          if (node.isPoints) {
+              if (node.name.toLowerCase().includes('scene')) {
+                  node.material.size = 0.05; // 场景点云大小
+                  node.material.sizeAttenuation = true; 
+              }
+              if (node.name.toLowerCase().includes('human')) {
+                  node.material.size = 0.005; // 人体点云大小 (更细腻)
+              }
+          }
+  
+          // [帧解析]
+          if (node.name && node.name.startsWith('frame_')) {
+              const parts = node.name.split('_');
+              if (parts.length === 2 && !isNaN(parseInt(parts[1]))) {
+                  const idx = parseInt(parts[1]);
+                  frames[idx] = node;
+                  node.visible = false;
+              }
+          }
+        });
+        
+        frames = frames.filter(n => n !== undefined);
+        console.log(`Loaded ${frames.length} frames.`);
+  
+        if (frames.length > 0) {
+          slider.max = frames.length - 1;
+          loadingOverlay.style.display = 'none';
+          showFrame(0);
+        } else {
+          loadingOverlay.innerHTML = "<p>No frames found.</p>";
+        }
+  
+      }, undefined, function (error) {
+        console.error(error);
+        loadingOverlay.innerHTML = "<p>Error loading model.</p>";
+      });
+  
+      window.addEventListener('resize', onWindowResize);
+      animate();
+    }
+  
+    function showFrame(idx) {
+      if (!frames[idx]) return;
+      if (frames[currentFrame]) frames[currentFrame].visible = false;
+      frames[idx].visible = true;
+      currentFrame = idx;
+      slider.value = idx;
+      frameLabel.innerText = `Frame: ${idx}`;
+    }
+  
+    function togglePlay() {
+      if (frames.length === 0) return;
+      isPlaying = !isPlaying;
+      
+      const icon = playBtn.querySelector('.fa-play, .fa-pause');
+      
+      if (isPlaying) {
+        if(icon) { icon.classList.remove('fa-play'); icon.classList.add('fa-pause'); }
+        intervalId = setInterval(() => {
+          let next = currentFrame + 1;
+          if (next >= frames.length) next = 0;
+          showFrame(next);
+        }, 1000 / FPS);
+      } else {
+        if(icon) { icon.classList.remove('fa-pause'); icon.classList.add('fa-play'); }
+        clearInterval(intervalId);
+      }
+    }
+  
+    slider.addEventListener('input', (e) => {
+      if (isPlaying) togglePlay();
+      showFrame(parseInt(e.target.value));
+    });
+    playBtn.addEventListener('click', togglePlay);
+  
+    function onWindowResize() {
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+  
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+  </script>
+
+</body>
+</html>
