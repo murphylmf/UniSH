@@ -63,7 +63,7 @@
       box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
     }
 
-    /* 4. Teaser 媒体容器样式 (视频和图片共用) */
+    /* 4. Teaser 媒体容器样式 (遮挡黑边 + 装饰) */
     .teaser-video-wrapper {
       position: relative;
       border-radius: 12px;
@@ -71,7 +71,13 @@
       border: 1px solid rgba(0,0,0,0.08); 
       box-shadow: 0 8px 20px rgba(0,0,0,0.12);
       margin-bottom: 20px;
-      background: #000; /* 图片背景也可以是黑的，或者改成 #fff */
+      background: #000;
+    }
+
+    /* 作者名字样式微调 */
+    .author-block {
+      margin-right: 10px;
+      white-space: nowrap; 
     }
   </style>
 
@@ -87,15 +93,36 @@
 <body>
 
 <section class="hero">
-  <div class="hero-body">
+  <div class="hero-body" style="padding-bottom: 0;">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-1 publication-title">UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass</h1>
+          
           <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              Placeholder names (Your Name, Co-Author, etc.)
-            </span>
+            <span class="author-block">Mengfei Li<sup>1</sup>,</span>
+            <span class="author-block">Peng Li<sup>1</sup>,</span>
+            <span class="author-block">Zheng Zhang<sup>2</sup>,</span>
+            <span class="author-block">Jiahao Lu<sup>1</sup>,</span>
+            <span class="author-block">Chengfeng Zhao<sup>1</sup>,</span>
+            <span class="author-block">Wei Xue<sup>1</sup>,</span>
+            <br>
+            <span class="author-block">Qifeng Liu<sup>1</sup>,</span>
+            <span class="author-block">Sida Peng<sup>3</sup>,</span>
+            <span class="author-block">Wenxiao Zhang<sup>2</sup>,</span>
+            <span class="author-block">Wenhan Luo<sup>1</sup>,</span>
+            <span class="author-block">Yuan Liu<sup>1&#8224;</sup>,</span>
+            <span class="author-block">Yike Guo<sup>1&#8224;</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>HKUST,</span>
+            <span class="author-block"><sup>2</sup>Independent Researcher,</span>
+            <span class="author-block"><sup>3</sup>ZJU</span>
+          </div>
+
+          <div class="is-size-6 publication-authors">
+            <span class="author-block"><sup>&#8224;</sup>Corresponding authors.</span>
           </div>
 
           <div class="column has-text-centered">
@@ -107,7 +134,7 @@
                 </a>
               </span>
               <span class="link-block">
-                <a href="https://github.com/Placeholder/UniSH" class="external-link button is-normal is-rounded is-dark">
+                <a href="https://github.com/murphylmf/UniSH" class="external-link button is-normal is-rounded is-dark">
                   <span class="icon"><i class="fab fa-github"></i></span>
                   <span>Code</span>
                   </a>
@@ -120,9 +147,9 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" style="padding-top: 20px; padding-bottom: 0;">
   <div class="container is-max-desktop">
-    <div class="hero-body has-text-centered">
+    <div class="hero-body has-text-centered" style="padding-top: 0;">
       
       <div class="teaser-video-wrapper">
         <video id="teaser-video" autoplay muted loop playsinline controls style="width: 100%; height: auto; display: block;">
@@ -130,17 +157,18 @@
         </video>
       </div>
 
-      <div class="teaser-video-wrapper" style="background: #fff;"> <img src="./static/images/teaser.svg" alt="UniSH Teaser" style="width: 100%; display: block;">
+      <div class="teaser-video-wrapper" style="background: #fff;">
+        <img src="./static/images/teaser.svg" alt="UniSH Teaser" style="width: 100%; display: block;">
       </div>
       
-      <h2 class="subtitle has-text-centered">
+      <div class="content has-text-centered is-size-6">
         Given a monocular video as input, our UniSH is capable of jointly reconstructing scene and human in a single forward pass, enabling effective estimation of scene geometry, camera parameters and SMPL parameters.
-      </h2>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" style="padding-top: 20px;">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
@@ -162,7 +190,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Method</h2>
+        <h2 class="title is-3">Overview</h2>
         <div class="content">
             <img src="./static/images/framework.svg" alt="UniSH Framework" style="width: 100%; max-width: 1000px; margin-bottom: 10px;">
             <p class="has-text-justified is-size-6">
@@ -235,19 +263,19 @@
       </div>
       <div class="item item-video3">
         <video poster="" id="video3" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_3.mp4" type="video/mp4">
+          <source src="./static/videos/case_4.mp4" type="video/mp4">
         </video>
         <div class="video-overlay-label">SEQ 03 / 12</div>
       </div>
       <div class="item item-video4">
         <video poster="" id="video4" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_4.mp4" type="video/mp4">
+          <source src="./static/videos/case_11.mp4" type="video/mp4">
         </video>
         <div class="video-overlay-label">SEQ 04 / 12</div>
       </div>
       <div class="item item-video5">
         <video poster="" id="video5" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_5.mp4" type="video/mp4">
+          <source src="./static/videos/case_3.mp4" type="video/mp4">
         </video>
         <div class="video-overlay-label">SEQ 05 / 12</div>
       </div>
@@ -283,7 +311,7 @@
       </div>
       <div class="item item-video11">
         <video poster="" id="video11" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_11.mp4" type="video/mp4">
+          <source src="./static/videos/case_5.mp4" type="video/mp4">
         </video>
         <div class="video-overlay-label">SEQ 11 / 12</div>
       </div>
@@ -297,17 +325,17 @@
   </div>
 </section>
 
-<section class="section" id="BibTeX">
+<!-- <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
     <pre><code>@inproceedings{unish2025,
-  author    = {Placeholder Names},
+  author    = {Li, Mengfei and Li, Peng and Zhang, Zheng and Lu, Jiahao and Zhao, Chengfeng and Xue, Wei and Liu, Qifeng and Peng, Sida and Zhang, Wenxiao and Luo, Wenhan and Liu, Yuan and Guo, Yike},
   title     = {UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass},
   booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year      = {2025},
+  year      = {2026},
 }</code></pre>
   </div>
-</section>
+</section> -->
 
 <footer class="footer">
   <div class="container">
@@ -372,7 +400,7 @@
       camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
       
       // ================================================================
-      // [已填入你提供的参数]
+      // [已填入参数]
       // ================================================================
       camera.position.set(-0.000, -4.272, 0.000);
       // ================================================================
@@ -404,7 +432,7 @@
       controls.dampingFactor = 0.05;
       
       // ================================================================
-      // [已填入你提供的 Target]
+      // [已填入 Target]
       // ================================================================
       controls.target.set(0.000, 0.000, 0.000);
       // ================================================================
