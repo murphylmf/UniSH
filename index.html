@@ -10,9 +10,8 @@
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
   <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 
   <style>
@@ -63,21 +62,59 @@
       box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
     }
 
-    /* 4. Teaser 媒体容器样式 (遮挡黑边 + 装饰) */
+    /* 4. Teaser 媒体容器样式 */
     .teaser-video-wrapper {
       position: relative;
-      border-radius: 12px;
+      border-radius: 8px; 
       overflow: hidden; 
       border: 1px solid rgba(0,0,0,0.08); 
       box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-      margin-bottom: 20px;
       background: #000;
+      width: 100%;
+    }
+    
+    .teaser-video-wrapper video {
+      display: block;
+      width: 100%;
+      height: auto;
     }
 
-    /* 作者名字样式微调 */
+    /* 作者名字样式 */
     .author-block {
       margin-right: 10px;
       white-space: nowrap; 
+    }
+    
+    /* 同步播放器控制条 */
+    .video-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+        gap: 15px;
+    }
+    
+    /* 自定义 Slider */
+    input[type=range].custom-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range].custom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #363636;
+      cursor: pointer;
+      margin-top: -6px; 
+    }
+    input[type=range].custom-slider::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: #dbdbdb;
+      border-radius: 2px;
     }
   </style>
 
@@ -109,16 +146,17 @@
             <br>
             <span class="author-block">Qifeng Liu<sup>1</sup>,</span>
             <span class="author-block">Sida Peng<sup>3</sup>,</span>
-            <span class="author-block">Wenxiao Zhang<sup>2</sup>,</span>
+            <span class="author-block">Wenxiao Zhang<sup>1</sup>,</span>
             <span class="author-block">Wenhan Luo<sup>1</sup>,</span>
             <span class="author-block">Yuan Liu<sup>1&#8224;</sup>,</span>
             <span class="author-block">Yike Guo<sup>1&#8224;</sup></span>
           </div>
 
           <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>HKUST,</span>
-            <span class="author-block"><sup>2</sup>Independent Researcher,</span>
-            <span class="author-block"><sup>3</sup>ZJU</span>
+            <span class="author-block"><sup>1</sup>The Hong Kong University of Science and Technology</span>
+            <br>
+            <span class="author-block"><sup>2</sup>Beijing University of Posts and Telecommunications,</span>
+            <span class="author-block"><sup>3</sup>Zhejiang University</span>
           </div>
 
           <div class="is-size-6 publication-authors">
@@ -151,17 +189,49 @@
   <div class="container is-max-desktop">
     <div class="hero-body has-text-centered" style="padding-top: 0;">
       
-      <div class="teaser-video-wrapper">
-        <video id="teaser-video" autoplay muted loop playsinline controls style="width: 100%; height: auto; display: block;">
-          <source src="./static/videos/teaser.mp4" type="video/mp4">
-        </video>
+      <div id="synced-video-container" style="width: 100%; margin: 0 auto;">
+        
+        <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+          <div style="width: 40%; text-align: center;"> 
+            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: #4a4a4a;">Input Video</p>
+            <div class="teaser-video-wrapper">
+              <video class="sync-video" muted playsinline autoplay>
+                <source src="./static/videos/input.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; gap: 20px;">
+          <div style="width: 49%;">
+            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: #4a4a4a;">SMPL + Scene Point Cloud</p>
+            <div class="teaser-video-wrapper">
+              <video class="sync-video" muted playsinline autoplay>
+                <source src="./static/videos/result_1.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          
+          <div style="width: 49%;">
+            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: #4a4a4a;">Human + Scene Point Cloud</p>
+            <div class="teaser-video-wrapper">
+              <video class="sync-video" muted playsinline autoplay>
+                <source src="./static/videos/result_2.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <div class="video-controls">
+           <button id="global-play-btn" class="button is-dark is-rounded is-small">
+             <span class="icon"><i class="fas fa-pause"></i></span>
+           </button>
+           <input type="range" id="global-seeker" class="custom-slider" value="0" min="0" max="100" step="0.1" style="flex-grow: 1;">
+        </div>
+
       </div>
 
-      <div class="teaser-video-wrapper" style="background: #fff;">
-        <img src="./static/images/teaser.svg" alt="UniSH Teaser" style="width: 100%; display: block;">
-      </div>
-      
-      <div class="content has-text-centered is-size-6">
+      <div class="content has-text-centered is-size-6" style="margin-top: 20px;">
         Given a monocular video as input, our UniSH is capable of jointly reconstructing scene and human in a single forward pass, enabling effective estimation of scene geometry, camera parameters and SMPL parameters.
       </div>
     </div>
@@ -190,7 +260,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Overview</h2>
+        <h2 class="title is-3">Method</h2>
         <div class="content">
             <img src="./static/images/framework.svg" alt="UniSH Framework" style="width: 100%; max-width: 1000px; margin-bottom: 10px;">
             <p class="has-text-justified is-size-6">
@@ -245,85 +315,85 @@
 </section>
 
 <section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">More visualization results</h2>
-    
-    <div id="results-carousel" class="carousel results-carousel">
-      <div class="item item-video1">
-        <video poster="" id="video1" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_1.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 01 / 12</div>
-      </div>
-      <div class="item item-video2">
-        <video poster="" id="video2" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_2.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 02 / 12</div>
-      </div>
-      <div class="item item-video3">
-        <video poster="" id="video3" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_4.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 03 / 12</div>
-      </div>
-      <div class="item item-video4">
-        <video poster="" id="video4" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_11.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 04 / 12</div>
-      </div>
-      <div class="item item-video5">
-        <video poster="" id="video5" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_3.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 05 / 12</div>
-      </div>
-      <div class="item item-video6">
-        <video poster="" id="video6" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_6.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 06 / 12</div>
-      </div>
-      <div class="item item-video7">
-        <video poster="" id="video7" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_7.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 07 / 12</div>
-      </div>
-      <div class="item item-video8">
-        <video poster="" id="video8" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_8.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 08 / 12</div>
-      </div>
-      <div class="item item-video9">
-        <video poster="" id="video9" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_9.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 09 / 12</div>
-      </div>
-      <div class="item item-video10">
-        <video poster="" id="video10" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_10.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 10 / 12</div>
-      </div>
-      <div class="item item-video11">
-        <video poster="" id="video11" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_5.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 11 / 12</div>
-      </div>
-      <div class="item item-video12">
-        <video poster="" id="video12" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/case_12.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay-label">SEQ 12 / 12</div>
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">More Visualization Results</h2>
+      
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-video1">
+          <video poster="" id="video1" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_1.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 01 / 12</div>
+        </div>
+        <div class="item item-video2">
+          <video poster="" id="video2" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_2.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 02 / 12</div>
+        </div>
+        <div class="item item-video3">
+          <video poster="" id="video3" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_4.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 03 / 12</div>
+        </div>
+        <div class="item item-video4">
+          <video poster="" id="video4" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_11.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 04 / 12</div>
+        </div>
+        <div class="item item-video5">
+          <video poster="" id="video5" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_3.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 05 / 12</div>
+        </div>
+        <div class="item item-video6">
+          <video poster="" id="video6" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_6.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 06 / 12</div>
+        </div>
+        <div class="item item-video7">
+          <video poster="" id="video7" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_7.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 07 / 12</div>
+        </div>
+        <div class="item item-video8">
+          <video poster="" id="video8" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_8.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 08 / 12</div>
+        </div>
+        <div class="item item-video9">
+          <video poster="" id="video9" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_9.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 09 / 12</div>
+        </div>
+        <div class="item item-video10">
+          <video poster="" id="video10" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_10.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 10 / 12</div>
+        </div>
+        <div class="item item-video11">
+          <video poster="" id="video11" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_5.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 11 / 12</div>
+        </div>
+        <div class="item item-video12">
+          <video poster="" id="video12" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/case_12.mp4" type="video/mp4">
+          </video>
+          <div class="video-overlay-label">SEQ 12 / 12</div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
 <!-- <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
@@ -355,6 +425,99 @@
 <script src="./static/js/fontawesome.all.min.js"></script>
 <script src="./static/js/bulma-carousel.min.js"></script>
 <script src="./static/js/bulma-slider.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const videos = Array.from(document.querySelectorAll('.sync-video'));
+    const playBtn = document.getElementById('global-play-btn');
+    const seeker = document.getElementById('global-seeker');
+    
+    if (videos.length === 0) return;
+
+    const masterVideo = videos[0];
+    let maxDuration = 0;
+    let isSeeking = false;
+
+    // 1. 初始化
+    videos.forEach(v => {
+        v.muted = true;
+        v.loop = false;
+        v.playsInline = true;
+        
+        if (v.readyState >= 1) maxDuration = Math.max(maxDuration, v.duration);
+        v.addEventListener('loadedmetadata', () => {
+             maxDuration = Math.max(maxDuration, v.duration);
+        });
+    });
+
+    // 2. 暴力 UI 更新 (使用 innerHTML，无视 classList 问题)
+    function updatePlayButtonUI(isPlaying) {
+        // 直接替换 HTML 内容，强制浏览器重绘图标
+        if (isPlaying) {
+            playBtn.innerHTML = '<span class="icon"><i class="fas fa-pause"></i></span>';
+        } else {
+            playBtn.innerHTML = '<span class="icon"><i class="fas fa-play"></i></span>';
+        }
+    }
+
+    // 3. 监听视频状态 (Source of Truth)
+    masterVideo.addEventListener('play', () => updatePlayButtonUI(true));
+    masterVideo.addEventListener('pause', () => updatePlayButtonUI(false));
+    masterVideo.addEventListener('ended', () => updatePlayButtonUI(false));
+
+    // 4. 自动播放尝试
+    const attemptPlay = async () => {
+        try {
+            await Promise.all(videos.map(v => v.play()));
+        } catch (error) {
+            console.log("Autoplay blocked.");
+            videos.forEach(v => v.pause());
+            updatePlayButtonUI(false);
+        }
+    };
+    setTimeout(attemptPlay, 200);
+
+    // 5. 点击控制
+    playBtn.addEventListener('click', () => {
+        if (masterVideo.paused) {
+            videos.forEach(v => v.play());
+        } else {
+            videos.forEach(v => v.pause());
+        }
+    });
+
+    // 6. 进度条拖拽
+    seeker.addEventListener('input', (e) => {
+        isSeeking = true;
+        const time = (parseFloat(e.target.value) / 100) * maxDuration;
+        videos.forEach(v => v.currentTime = time);
+    });
+
+    seeker.addEventListener('change', () => {
+        isSeeking = false;
+        if (!masterVideo.paused) {
+             videos.forEach(v => v.play());
+        }
+    });
+
+    // 7. 循环逻辑
+    function syncLoop() {
+        requestAnimationFrame(syncLoop);
+        if (!isSeeking && maxDuration > 0) {
+            const current = masterVideo.currentTime;
+            seeker.value = (current / maxDuration) * 100;
+
+            if (current >= maxDuration - 0.1) {
+                videos.forEach(v => {
+                    v.currentTime = 0;
+                    if (!masterVideo.paused) v.play();
+                });
+            }
+        }
+    }
+    requestAnimationFrame(syncLoop);
+});
+</script>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -398,24 +561,17 @@
       scene.background = new THREE.Color(0xf5f5f5);
   
       camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
-      
-      // ================================================================
-      // [已填入参数]
-      // ================================================================
       camera.position.set(-0.000, -4.272, 0.000);
-      // ================================================================
   
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
       
-      // [调试] 关闭阴影贴图和旧光照模式
       renderer.shadowMap.enabled = false; 
       renderer.useLegacyLights = false; 
   
       container.appendChild(renderer.domElement);
   
-      // [超强灯光组合]
       const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 3.0);
       scene.add(hemiLight);
       
@@ -431,11 +587,7 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
       
-      // ================================================================
-      // [已填入 Target]
-      // ================================================================
       controls.target.set(0.000, 0.000, 0.000);
-      // ================================================================
   
       const loader = new GLTFLoader();
       console.log("Loading:", MODEL_PATH);
@@ -447,17 +599,11 @@
         frames = [];
         root.traverse((node) => {
           
-          // ==========================================
-          // [SMPL 修复]
-          // ==========================================
           if (node.isMesh) {
-              // 1. 强制重新计算法线
               node.geometry.computeVertexNormals();
-              // 2. 删除原有颜色属性
               if (node.geometry.attributes.color) {
                   node.geometry.deleteAttribute('color');
               }
-              // 3. 赋予材质 (肉色)
               node.material = new THREE.MeshStandardMaterial({
                   color: 0xff9966,
                   roughness: 0.4,
@@ -467,18 +613,16 @@
               node.material.vertexColors = false; 
           }
   
-          // [点云大小]
           if (node.isPoints) {
               if (node.name.toLowerCase().includes('scene')) {
-                  node.material.size = 0.05; // 场景点云大小
+                  node.material.size = 0.05; 
                   node.material.sizeAttenuation = true; 
               }
               if (node.name.toLowerCase().includes('human')) {
-                  node.material.size = 0.005; // 人体点云大小 (更细腻)
+                  node.material.size = 0.005; 
               }
           }
   
-          // [帧解析]
           if (node.name && node.name.startsWith('frame_')) {
               const parts = node.name.split('_');
               if (parts.length === 2 && !isNaN(parseInt(parts[1]))) {
