@@ -71,6 +71,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.12);
       background: #000;
       width: 100%;
+      margin-bottom: 20px; /* 视频和图片之间的间距 */
     }
     
     .teaser-video-wrapper video {
@@ -192,6 +193,10 @@
         <video id="teaser-video" autoplay muted loop playsinline controls style="width: 100%; height: auto;">
           <source src="./static/videos/teaser_video_final.mp4" type="video/mp4">
         </video>
+      </div>
+
+      <div class="teaser-video-wrapper" style="background: #fff;">
+        <img src="./static/images/teaser.svg" alt="UniSH Teaser" style="width: 100%; display: block;">
       </div>
 
       <div class="content has-text-centered is-size-6" style="margin-top: 20px;">
