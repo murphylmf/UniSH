@@ -85,15 +85,6 @@
       white-space: nowrap; 
     }
     
-    /* 同步播放器控制条 */
-    .video-controls {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 15px;
-        gap: 15px;
-    }
-    
     /* 自定义 Slider */
     input[type=range].custom-slider {
       -webkit-appearance: none;
@@ -166,16 +157,24 @@
           <div class="column has-text-centered">
             <div class="publication-links">
               <span class="link-block">
-                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                <a href="https://arxiv.org/abs/2601.01222" class="external-link button is-normal is-rounded is-dark">
                   <span class="icon"><i class="fas fa-file-pdf"></i></span>
                   <span>arXiv</span>
                 </a>
               </span>
+              
               <span class="link-block">
                 <a href="https://github.com/murphylmf/UniSH" class="external-link button is-normal is-rounded is-dark">
                   <span class="icon"><i class="fab fa-github"></i></span>
                   <span>Code</span>
                   </a>
+              </span>
+
+              <span class="link-block">
+                <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-book"></i></span>
+                  <span>BibTeX</span>
+                </a>
               </span>
             </div>
           </div>
@@ -189,46 +188,10 @@
   <div class="container is-max-desktop">
     <div class="hero-body has-text-centered" style="padding-top: 0;">
       
-      <div id="synced-video-container" style="width: 100%; margin: 0 auto;">
-        
-        <div style="display: flex; justify-content: center; margin-bottom: 15px;">
-          <div style="width: 40%; text-align: center;"> 
-            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: #4a4a4a;">Input Video</p>
-            <div class="teaser-video-wrapper">
-              <video class="sync-video" muted playsinline autoplay>
-                <source src="./static/videos/input.mp4" type="video/mp4">
-              </video>
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; gap: 20px;">
-          <div style="width: 49%;">
-            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: #4a4a4a;">SMPL + Scene Point Cloud</p>
-            <div class="teaser-video-wrapper">
-              <video class="sync-video" muted playsinline autoplay>
-                <source src="./static/videos/result_1.mp4" type="video/mp4">
-              </video>
-            </div>
-          </div>
-          
-          <div style="width: 49%;">
-            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: #4a4a4a;">Human Point Cloud + Scene Point Cloud</p>
-            <div class="teaser-video-wrapper">
-              <video class="sync-video" muted playsinline autoplay>
-                <source src="./static/videos/result_2.mp4" type="video/mp4">
-              </video>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-controls">
-           <button id="global-play-btn" class="button is-dark is-rounded is-small">
-             <span class="icon"><i class="fas fa-pause"></i></span>
-           </button>
-           <input type="range" id="global-seeker" class="custom-slider" value="0" min="0" max="100" step="0.1" style="flex-grow: 1;">
-        </div>
-
+      <div class="teaser-video-wrapper">
+        <video id="teaser-video" autoplay muted loop playsinline controls style="width: 100%; height: auto;">
+          <source src="./static/videos/teaser_video_final.mp4" type="video/mp4">
+        </video>
       </div>
 
       <div class="content has-text-centered is-size-6" style="margin-top: 20px;">
@@ -395,17 +358,20 @@
     </div>
   </section>
 
-<!-- <section class="section" id="BibTeX">
+<section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@inproceedings{unish2025,
-  author    = {Li, Mengfei and Li, Peng and Zhang, Zheng and Lu, Jiahao and Zhao, Chengfeng and Xue, Wei and Liu, Qifeng and Peng, Sida and Zhang, Wenxiao and Luo, Wenhan and Liu, Yuan and Guo, Yike},
-  title     = {UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year      = {2026},
+    <pre><code>@misc{li2026unishunifyingscenehuman,
+      title={UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass}, 
+      author={Mengfei Li and Peng Li and Zheng Zhang and Jiahao Lu and Chengfeng Zhao and Wei Xue and Qifeng Liu and Sida Peng and Wenxiao Zhang and Wenhan Luo and Yuan Liu and Yike Guo},
+      year={2026},
+      eprint={2601.01222},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2601.01222}, 
 }</code></pre>
   </div>
-</section> -->
+</section>
 
 <footer class="footer">
   <div class="container">
@@ -425,99 +391,6 @@
 <script src="./static/js/fontawesome.all.min.js"></script>
 <script src="./static/js/bulma-carousel.min.js"></script>
 <script src="./static/js/bulma-slider.min.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const videos = Array.from(document.querySelectorAll('.sync-video'));
-    const playBtn = document.getElementById('global-play-btn');
-    const seeker = document.getElementById('global-seeker');
-    
-    if (videos.length === 0) return;
-
-    const masterVideo = videos[0];
-    let maxDuration = 0;
-    let isSeeking = false;
-
-    // 1. 初始化
-    videos.forEach(v => {
-        v.muted = true;
-        v.loop = false;
-        v.playsInline = true;
-        
-        if (v.readyState >= 1) maxDuration = Math.max(maxDuration, v.duration);
-        v.addEventListener('loadedmetadata', () => {
-             maxDuration = Math.max(maxDuration, v.duration);
-        });
-    });
-
-    // 2. 暴力 UI 更新 (使用 innerHTML，无视 classList 问题)
-    function updatePlayButtonUI(isPlaying) {
-        // 直接替换 HTML 内容，强制浏览器重绘图标
-        if (isPlaying) {
-            playBtn.innerHTML = '<span class="icon"><i class="fas fa-pause"></i></span>';
-        } else {
-            playBtn.innerHTML = '<span class="icon"><i class="fas fa-play"></i></span>';
-        }
-    }
-
-    // 3. 监听视频状态 (Source of Truth)
-    masterVideo.addEventListener('play', () => updatePlayButtonUI(true));
-    masterVideo.addEventListener('pause', () => updatePlayButtonUI(false));
-    masterVideo.addEventListener('ended', () => updatePlayButtonUI(false));
-
-    // 4. 自动播放尝试
-    const attemptPlay = async () => {
-        try {
-            await Promise.all(videos.map(v => v.play()));
-        } catch (error) {
-            console.log("Autoplay blocked.");
-            videos.forEach(v => v.pause());
-            updatePlayButtonUI(false);
-        }
-    };
-    setTimeout(attemptPlay, 200);
-
-    // 5. 点击控制
-    playBtn.addEventListener('click', () => {
-        if (masterVideo.paused) {
-            videos.forEach(v => v.play());
-        } else {
-            videos.forEach(v => v.pause());
-        }
-    });
-
-    // 6. 进度条拖拽
-    seeker.addEventListener('input', (e) => {
-        isSeeking = true;
-        const time = (parseFloat(e.target.value) / 100) * maxDuration;
-        videos.forEach(v => v.currentTime = time);
-    });
-
-    seeker.addEventListener('change', () => {
-        isSeeking = false;
-        if (!masterVideo.paused) {
-             videos.forEach(v => v.play());
-        }
-    });
-
-    // 7. 循环逻辑
-    function syncLoop() {
-        requestAnimationFrame(syncLoop);
-        if (!isSeeking && maxDuration > 0) {
-            const current = masterVideo.currentTime;
-            seeker.value = (current / maxDuration) * 100;
-
-            if (current >= maxDuration - 0.1) {
-                videos.forEach(v => {
-                    v.currentTime = 0;
-                    if (!masterVideo.paused) v.play();
-                });
-            }
-        }
-    }
-    requestAnimationFrame(syncLoop);
-});
-</script>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
