@@ -79,9 +79,7 @@ class TimeStepRoPE1D(nn.Module):
         return self.apply_rope1d(tokens, positions.long(), cos, sin)
 
 
-class TransformerDecoderLayer(nn.Module):
-    """单层Transformer Decoder with RoPE support"""
-    
+class TransformerDecoderLayer(nn.Module):    
     def __init__(self, hidden_dim=512, num_heads=8, ff_dim=1024, dropout=0.1, use_rope=True):
         super().__init__()
         
@@ -287,7 +285,6 @@ class CrossViewTransformerDecoderLayer(nn.Module):
             # RoPE for timestep embedding
             self.timestep_rope = TimeStepRoPE1D(freq=100.0)
         else:
-            # Self Attention层
             self.self_attention = nn.MultiheadAttention(
                 embed_dim=hidden_dim,
                 num_heads=num_heads,
@@ -295,7 +292,6 @@ class CrossViewTransformerDecoderLayer(nn.Module):
                 batch_first=True
             )
             
-            # Cross Attention层
             self.cross_attention = nn.MultiheadAttention(
                 embed_dim=hidden_dim,
                 num_heads=num_heads,

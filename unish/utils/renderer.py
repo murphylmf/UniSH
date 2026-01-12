@@ -32,44 +32,44 @@ def overlay_image_onto_background(image, mask, bbox, background):
     out_image = background.copy()
     bbox = bbox[0].int().cpu().numpy().copy()
     
-    # 确保边界框坐标在有效范围内
+    # Ensure bbox coordinates are within valid range
     h_bg, w_bg = background.shape[:2]
     left, top, right, bottom = bbox[0], bbox[1], bbox[2], bbox[3]
     
-    # 限制边界框坐标在背景图像范围内
+    # Limit bbox coordinates within background image range
     left = max(0, min(left, w_bg))
     top = max(0, min(top, h_bg))
-    right = max(left + 1, min(right, w_bg))  # 确保right > left
-    bottom = max(top + 1, min(bottom, h_bg))  # 确保bottom > top
+    right = max(left + 1, min(right, w_bg))  # Ensure right > left
+    bottom = max(top + 1, min(bottom, h_bg))  # Ensure bottom > top
     
     roi_image = out_image[top:bottom, left:right]
     
-    # 检查roi_image是否为空
+    # Check if roi_image is empty
     if roi_image.size == 0:
         print(f"Warning: ROI image is empty. bbox: [{left}, {top}, {right}, {bottom}], bg_shape: {background.shape}")
         return out_image
     
-    # 检查image和mask的维度是否匹配roi_image
+    # Check if dimensions of image and mask match roi_image
     expected_height, expected_width = bottom - top, right - left
     
     if image.shape[:2] != (expected_height, expected_width):
         print(f"Warning: Image shape mismatch. Expected: ({expected_height}, {expected_width}), Got: {image.shape[:2]}")
-        # 如果尺寸不匹配，使用背景色
+        # If dimensions mismatch, use background color
         return out_image
         
     if mask.shape[:2] != (expected_height, expected_width):
         print(f"Warning: Mask shape mismatch. Expected: ({expected_height}, {expected_width}), Got: {mask.shape[:2]}")
-        # 如果尺寸不匹配，使用背景色
+        # If dimensions mismatch, use background color
         return out_image
     
-    # 安全地应用掩码
+    # Safely apply mask
     try:
         roi_image[mask] = image[mask]
         out_image[top:bottom, left:right] = roi_image
     except Exception as e:
         print(f"Error in overlay operation: {e}")
         print(f"roi_image shape: {roi_image.shape}, mask shape: {mask.shape}, image shape: {image.shape}")
-        # 如果出错，返回原始背景
+        # If error occurs, return original background
         return out_image
 
     return out_image

@@ -366,8 +366,8 @@ def rotmat_to_rot6d(x: torch.Tensor) -> torch.Tensor:
         torch.Tensor: Batch of corresponding 6D rotation representations with shape (B,6).
     """
     assert len(x.shape) == 3 and x.shape[1] == 3 and x.shape[2] == 3
-    # 按列的顺序输出：前3个元素是第一列，后3个元素是第二列
-    # 这样与rot6d_to_rotmat中的reshape操作匹配
+    # Output in column order: first 3 elements are the first column, next 3 elements are the second column
+    # This matches the reshape operation in rot6d_to_rotmat
     return torch.cat([x[:, :, 0], x[:, :, 1]], dim=-1)
 
 def aa_to_rot6d(x: torch.Tensor) -> torch.Tensor:

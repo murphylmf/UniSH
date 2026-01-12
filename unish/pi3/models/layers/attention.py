@@ -240,7 +240,6 @@ class FlashCrossAttentionRope(CrossAttentionRope):
         B, N, C = query.shape
         _, M, _ = key.shape
 
-        # 1. 投射 query, key, value 并调整维度为 (B, num_heads, Seq_Len, head_dim)
         q = self.q_proj(query).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
         k = self.k_proj(key).reshape(B, M, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
         v = self.v_proj(value).reshape(B, M, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)

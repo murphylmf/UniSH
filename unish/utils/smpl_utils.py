@@ -25,7 +25,7 @@ class SMPLWrapper:
         
         self.model_folder = model_folder
         self.model_type = model_type.lower()
-        # 🚀 确保device被正确转换为torch.device对象
+        # 🚀 Ensure device is correctly converted to torch.device object
         if isinstance(device, str):
             self.device = torch.device(device)
         else:
@@ -137,7 +137,7 @@ class SMPLWrapper:
 
     def get_batch_vertices(self, poses, betas, trans, gender):
         """
-        Get model vertices and joints for batched parameters (更高效的批处理版本)
+        Get model vertices and joints for batched parameters (More efficient batch version)
         
         Args:
             poses (torch.Tensor): Pose parameters [B, 72/165] (72 for SMPL, 165 for SMPL-X)
