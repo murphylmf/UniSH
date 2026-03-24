@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=murphylmf&project=UniSH&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 <div align="center">
 
 # UniSH: Unifying Scene and Human Reconstruction in a Feed-Forward Pass
